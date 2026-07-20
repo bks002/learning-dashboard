@@ -44,7 +44,27 @@ learning-dashboard/
 │   ├── PROJECT-PLAN.md           # Phased implementation plan (Phases 1–6)
 │   ├── prompts/                  # Phase 6: reusable AI prompt templates
 │   ├── SUBMISSION-DRAFT.md       # Part C form answers
-│   └── tool-workflow.MD          # Part A
+│   └── tool-workflow.MD          # Part A (full workflow log)
+├── candidate-info.md             # Assessment lifecycle artifacts (guide §5)
+├── tool-workflow.md              # Part A summary (links to docs/tool-workflow.MD)
+├── requirements-analysis.md
+├── acceptance-criteria.md
+├── implementation-plan.md
+├── design-notes.md
+├── api-contract.md
+├── data-model.md
+├── ui-flow.md
+├── test-strategy.md
+├── test-results.md
+├── debugging-notes.md
+├── code-review-notes.md
+├── review-fixes.md
+├── pr-description.md
+├── reflection.md
+├── final-ai-usage-summary.md
+├── database/                     # setup-notes, seed-data, migrations pointer
+├── ai-prompts/                   # prompt history by activity
+├── tool-specific/cursor-workflow/
 ├── .github/workflows/ci.yml      # Phase 6: GitHub Actions
 ├── docker-compose.yml            # Phase 6: full-stack Docker
 ├── .gitignore                    # exclude *.db, .env, secrets

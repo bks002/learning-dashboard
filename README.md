@@ -162,3 +162,22 @@ learning-dashboard/
 - **Part C:** Submission via participation form — draft answers in `docs/SUBMISSION-DRAFT.md`
 
 See `docs/PROJECT-PLAN.md` for the full phased plan (Phases 1–6) and acceptance criteria checklist.
+
+## Assessment lifecycle artifacts
+
+Per the .NET AI Capability Exercise participant guide:
+
+| Artifact | Location |
+|----------|----------|
+| Candidate info | [candidate-info.md](candidate-info.md) |
+| AI workflow (Part A) | [tool-workflow.md](tool-workflow.md) · [docs/tool-workflow.MD](docs/tool-workflow.MD) |
+| Requirements | [requirements-analysis.md](requirements-analysis.md) |
+| Acceptance criteria | [acceptance-criteria.md](acceptance-criteria.md) |
+| Implementation plan | [implementation-plan.md](implementation-plan.md) · [docs/PROJECT-PLAN.md](docs/PROJECT-PLAN.md) |
+| Design / API / data / UI | [design-notes.md](design-notes.md), [api-contract.md](api-contract.md), [data-model.md](data-model.md), [ui-flow.md](ui-flow.md) |
+| Testing | [test-strategy.md](test-strategy.md), [test-results.md](test-results.md) |
+| Debugging / review | [debugging-notes.md](debugging-notes.md), [code-review-notes.md](code-review-notes.md), [review-fixes.md](review-fixes.md) |
+| Submission | [reflection.md](reflection.md), [pr-description.md](pr-description.md), [final-ai-usage-summary.md](final-ai-usage-summary.md), [docs/SUBMISSION-DRAFT.md](docs/SUBMISSION-DRAFT.md) |
+| Database | [database/setup-notes.md](database/setup-notes.md) |
+| AI prompts | [ai-prompts/](ai-prompts/) · [docs/prompts/](docs/prompts/) |
+| Cursor workflow | [tool-specific/cursor-workflow/](tool-specific/cursor-workflow/) |

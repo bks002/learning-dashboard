@@ -123,7 +123,7 @@ All **12/12** criteria passed on 2026-07-20.
 | 9   | Backend validation          | Pass — 400 on invalid create (API + client tests)                   |
 | 10  | Loading/empty/success/error | Pass — all 5 pages use state components                             |
 | 11  | No secrets                  | Pass — scan + `.gitignore`                                          |
-| 12  | Core tests pass             | Pass — `dotnet test` 6/6, `npm test` 7/7                            |
+| 12  | Core tests pass             | Pass — `dotnet test` 7/7, `npm test` 7/7                            |
 
 
 See `docs/PROJECT-PLAN.md` §6 for full evidence column.
@@ -138,10 +138,11 @@ See `docs/PROJECT-PLAN.md` §6 for full evidence column.
 | Public/shareable repo URL          | ☑ [https://github.com/bks002/learning-dashboard](https://github.com/bks002/learning-dashboard) |
 | `docs/tool-workflow.MD` complete   | ☑                                                                                              |
 | `README.md` with run instructions  | ☑                                                                                              |
-| `dotnet test` passes (6 tests)     | ☑                                                                                              |
+| `dotnet test` passes (7 tests)     | ☑                                                                                              |
 | `npm test` passes                  | ☑                                                                                              |
 | No secrets in repository           | ☑                                                                                              |
 | Participation form answers drafted | ☑ (this document)                                                                              |
+| Lifecycle artifacts (guide §5)     | ☑ (root `*.md`, `ai-prompts/`, `database/`, `tool-specific/cursor-workflow/`)                  |
 
 
 ---
@@ -160,7 +161,7 @@ npm ci
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173)
+Open [http://localhost:5173/login](http://localhost:5173/login) — sign in with `alice@example.com` / `Password123!`
 
 ```bash
 # Tests
