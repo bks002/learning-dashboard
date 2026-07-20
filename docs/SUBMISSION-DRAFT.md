@@ -121,7 +121,7 @@ See `docs/PROJECT-PLAN.md` §6 for full evidence column.
 
 | Item | Status |
 |------|--------|
-| Public/shareable repo URL | ☐ Add after `git push` |
+| Public/shareable repo URL | ☑ https://github.com/bks002/learning-dashboard |
 | `docs/tool-workflow.MD` complete | ☑ |
 | `README.md` with run instructions | ☑ |
 | `dotnet test` passes (6 tests) | ☑ |

@@ -299,7 +299,7 @@ Completed through the participation form.
 
 **Before submitting**
 
-- [ ] Public or shareable repo URL
+- [x] Public or shareable repo URL — https://github.com/bks002/learning-dashboard
 - [x] `tool-workflow.MD` complete
 - [x] README with run instructions
 - [x] Core tests passing (`dotnet test` 6/6, `npm test` 7/7)
