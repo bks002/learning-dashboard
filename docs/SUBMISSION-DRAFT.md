@@ -7,10 +7,10 @@
 ## Repository URL
 
 ```
-<replace with your GitHub URL after push>
+https://github.com/bks002/learning-dashboard
 ```
 
-Example: `https://github.com/<your-username>/learning-dashboard`
+> Repo remote is configured. Run `gh auth login` once, then `gh repo create learning-dashboard --public --source=. --remote=origin --push` if the repo does not exist yet.
 
 ---
 
