@@ -1,0 +1,136 @@
+# Learning Dashboard
+
+A full-stack dashboard for tracking learning goals, project tasks, ownership, due dates, and progress — built for the .NET AI Capability Exercise.
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Backend | ASP.NET Core Web API (.NET 9) |
+| ORM | Entity Framework Core + SQLite |
+| Frontend | React + TypeScript + Vite |
+| Backend tests | xUnit + WebApplicationFactory |
+| Frontend tests | Vitest + React Testing Library |
+
+## Prerequisites
+
+Install these before cloning:
+
+| Tool | Version | Verify |
+|------|---------|--------|
+| [.NET SDK](https://dotnet.microsoft.com/download) | 9.x | `dotnet --version` |
+| [Node.js](https://nodejs.org/) | 20+ | `node --version` |
+| npm | 10+ (bundled with Node) | `npm --version` |
+
+## Clone and run locally
+
+Everything needed to run the app is in this repository (source, migrations, lockfiles, config). Generated folders (`node_modules`, `bin`, `obj`, SQLite DB) are created on your machine and are **not** committed.
+
+### 1. Clone the repository
+
+```bash
+git clone <your-repo-url>
+cd learning-dashboard
+```
+
+### 2. Start the backend (Terminal 1)
+
+```bash
+cd backend
+dotnet restore
+dotnet run --project LearningDashboard.Api --launch-profile http
+```
+
+| Item | Value |
+|------|-------|
+| API | http://localhost:5004 |
+| Swagger | http://localhost:5004/swagger |
+| Health | http://localhost:5004/api/health |
+
+**First run:** EF Core applies migrations and creates `backend/LearningDashboard.Api/Data/learningdashboard.db` with seed data (3 users, 2 sample tasks). This file is gitignored and persists across restarts.
+
+### 3. Start the frontend (Terminal 2)
+
+```bash
+cd frontend
+npm ci
+npm run dev
+```
+
+| Item | Value |
+|------|-------|
+| App UI | http://localhost:5173 |
+
+The Vite dev server proxies `/api` to `http://localhost:5004`, so the UI talks to the backend without CORS setup.
+
+> Use `npm ci` (not `npm install`) after clone to install exact versions from `package-lock.json`.
+
+### 4. Optional environment file
+
+```bash
+cd frontend
+cp .env.example .env   # Linux/macOS
+# copy .env.example .env  # Windows
+```
+
+Default `VITE_API_BASE_URL=/api` works with the Vite proxy. Only change this if you run the API on a different host/port.
+
+## What is committed vs generated
+
+| Committed (in git) | Generated locally (gitignored) |
+|--------------------|--------------------------------|
+| Source code (`backend/`, `frontend/src/`) | `backend/**/bin/`, `backend/**/obj/` |
+| EF migrations (`backend/.../Migrations/`) | `backend/LearningDashboard.Api/Data/*.db` |
+| `package-lock.json`, `package.json` | `frontend/node_modules/` |
+| `NuGet.Config`, solution, csproj files | `frontend/dist/` |
+| `docs/`, `README.md`, `.env.example` | `.env` (if you create one) |
+
+## Tests
+
+```bash
+# Backend — 6 integration tests (create, update, filter, search, dashboard counts, validation)
+cd backend
+dotnet test
+
+# Frontend — 7 tests (dashboard counts, form validation, form submit)
+cd frontend
+npm test
+```
+
+Backend tests use in-memory SQLite via `WebApplicationFactory`. Frontend tests use Vitest + React Testing Library with mocked API calls.
+
+## Project structure
+
+```
+learning-dashboard/
+├── backend/
+│   ├── LearningDashboard.Api/        # Web API, entities, migrations, SQLite
+│   ├── LearningDashboard.Api.Tests/  # Integration tests
+│   └── LearningDashboard.sln
+├── frontend/                         # React SPA (Vite)
+├── docs/
+│   ├── PROJECT-PLAN.md               # Phased implementation plan
+│   └── tool-workflow.MD              # Part A: AI workflow document
+├── NuGet.Config                      # nuget.org only (avoids corporate feed 401s)
+├── .gitignore
+└── README.md
+```
+
+## Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| Port 5004 already in use | Stop the other process or change `applicationUrl` in `backend/LearningDashboard.Api/Properties/launchSettings.json` |
+| Port 5173 already in use | Vite will offer the next port, or stop the conflicting process |
+| `dotnet restore` fails with NuGet 401 | Ensure `NuGet.Config` at repo root is present (uses nuget.org only) |
+| Frontend cannot reach API | Confirm backend is running; use `http://localhost:5173` (proxy), not opening `dist/` directly in dev |
+| Empty database after clone | Normal before first `dotnet run` — migrations create and seed the DB automatically |
+| Data missing after delete | Do not delete `Data/learningdashboard.db` unless you want a fresh database |
+
+## Assessment parts
+
+- **Part A:** `docs/tool-workflow.MD` — AI workflow documentation
+- **Part B:** Core dashboard app (this repo)
+- **Part C:** Submission via participation form — draft answers in `docs/SUBMISSION-DRAFT.md`
+
+See `docs/PROJECT-PLAN.md` for the full plan and acceptance criteria checklist.

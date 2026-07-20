@@ -1,0 +1,129 @@
+.task-list-page__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.task-list-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.task-list-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-h);
+  min-width: 180px;
+}
+
+.task-list-filters select,
+.task-list-filters input {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
+}
+
+.task-list-filters input {
+  min-width: min(100%, 280px);
+}
+
+.task-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.task-table th,
+.task-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.task-table th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  background: var(--surface);
+  font-weight: 600;
+}
+
+.task-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.task-table tbody tr:hover {
+  background: var(--accent-bg);
+}
+
+.task-table__link {
+  color: var(--text-h);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.task-table__link:hover {
+  color: var(--accent);
+}
+
+.task-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.task-badge--planned {
+  background: rgba(59, 130, 246, 0.12);
+  color: #1d4ed8;
+}
+
+.task-badge--in-progress {
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.task-badge--completed {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--success);
+}
+
+.task-badge--priority-high {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+@media (prefers-color-scheme: dark) {
+  .task-badge--planned {
+    color: #93c5fd;
+  }
+}
+
+@media (max-width: 640px) {
+  .task-table th,
+  .task-table td {
+    padding: 12px;
+  }
+}

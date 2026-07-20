@@ -1,0 +1,72 @@
+.task-form__summary {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: #991b1b;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  font-size: 15px;
+}
+
+.task-form {
+  max-width: 640px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+
+.task-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.task-form__field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.task-form__field input,
+.task-form__field select,
+.task-form__field textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
+}
+
+.task-form__field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.task-form__field--error input,
+.task-form__field--error select,
+.task-form__field--error textarea {
+  border-color: var(--danger);
+}
+
+.task-form__error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--danger);
+}
+
+.task-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .task-form__summary {
+    color: #fecaca;
+    background: rgba(239, 68, 68, 0.15);
+  }
+}

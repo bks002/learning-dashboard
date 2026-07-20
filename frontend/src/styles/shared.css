@@ -1,0 +1,78 @@
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.75rem, 3vw, 2rem);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.page-header p {
+  margin: 0;
+  color: var(--text);
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.back-link:hover {
+  color: var(--accent);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font: inherit;
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    border-color 0.2s,
+    color 0.2s,
+    opacity 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn--secondary {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-h);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background: var(--code-bg);
+}
+
+.field-control:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
