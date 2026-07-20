@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { ErrorMessage, LoadingSpinner, SuccessMessage } from '../components'
-import { ApiError, getTask, updateTaskStatus } from '../services/api'
-import type { ProjectTask, TaskStatus } from '../types'
+import { ApiError, getTask, getTaskActivity, updateTaskStatus } from '../services/api'
+import type { ActivityLogEntry, ProjectTask, TaskStatus } from '../types'
 import './taskDetail.css'
 
 interface LocationState {
@@ -26,6 +26,17 @@ function formatDateTime(value: string | null): string {
   return new Date(value).toLocaleString()
 }
 
+function formatActivityAction(action: ActivityLogEntry['action']): string {
+  switch (action) {
+    case 'StatusChanged':
+      return 'Status changed'
+    case 'Created':
+      return 'Created'
+    default:
+      return 'Updated'
+  }
+}
+
 function statusClass(status: TaskStatus): string {
   switch (status) {
     case 'InProgress':
@@ -43,8 +54,11 @@ export function TaskDetailPage() {
   const taskId = Number(id)
 
   const [task, setTask] = useState<ProjectTask | null>(null)
+  const [activity, setActivity] = useState<ActivityLogEntry[]>([])
   const [loading, setLoading] = useState(true)
+  const [activityLoading, setActivityLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [activityError, setActivityError] = useState<string | null>(null)
   const [notFound, setNotFound] = useState(false)
   const [successMessage, setSuccessMessage] = useState<string | null>(
     (location.state as LocationState | null)?.successMessage ?? null,
@@ -84,9 +98,32 @@ export function TaskDetailPage() {
     }
   }, [id, taskId])
 
+  const loadActivity = useCallback(async () => {
+    if (!id || Number.isNaN(taskId)) {
+      setActivityLoading(false)
+      return
+    }
+
+    setActivityLoading(true)
+    setActivityError(null)
+
+    try {
+      const entries = await getTaskActivity(taskId)
+      setActivity(entries)
+    } catch (err) {
+      const message =
+        err instanceof ApiError ? err.message : 'Failed to load activity log.'
+      setActivity([])
+      setActivityError(message)
+    } finally {
+      setActivityLoading(false)
+    }
+  }, [id, taskId])
+
   useEffect(() => {
     void loadTask()
-  }, [loadTask])
+    void loadActivity()
+  }, [loadTask, loadActivity])
 
   const handleStatusUpdate = async (status: TaskStatus) => {
     if (!task) {
@@ -101,6 +138,7 @@ export function TaskDetailPage() {
       const updated = await updateTaskStatus(task.id, status)
       setTask(updated)
       setSuccessMessage(`Task marked as ${formatStatus(status)}.`)
+      await loadActivity()
     } catch (err) {
       const message =
         err instanceof ApiError ? err.message : 'Failed to update task status.'
@@ -147,7 +185,7 @@ export function TaskDetailPage() {
   }
 
   return (
-    <section className="task-detail-page">
+    <section className="task-detail-page" aria-labelledby="task-detail-heading">
       <header className="page-header task-detail-page__header">
         <div>
           <p>
@@ -155,7 +193,7 @@ export function TaskDetailPage() {
               ← Back to tasks
             </Link>
           </p>
-          <h1>{task.title}</h1>
+          <h1 id="task-detail-heading">{task.title}</h1>
         </div>
       </header>
 
@@ -248,6 +286,43 @@ export function TaskDetailPage() {
           </button>
         ) : null}
       </div>
+
+      <section className="task-activity" aria-labelledby="task-activity-heading">
+        <h2 id="task-activity-heading">Activity</h2>
+
+        {activityLoading ? <LoadingSpinner message="Loading activity..." /> : null}
+
+        {!activityLoading && activityError ? (
+          <ErrorMessage
+            title="Unable to load activity"
+            message={activityError}
+            onRetry={() => void loadActivity()}
+          />
+        ) : null}
+
+        {!activityLoading && !activityError && activity.length === 0 ? (
+          <p className="task-activity__empty">No activity recorded yet.</p>
+        ) : null}
+
+        {!activityLoading && !activityError && activity.length > 0 ? (
+          <ol className="task-activity__list">
+            {activity.map((entry) => (
+              <li key={entry.id} className="task-activity__item">
+                <div className="task-activity__meta">
+                  <strong>{formatActivityAction(entry.action)}</strong>
+                  <time dateTime={entry.createdAt}>
+                    {formatDateTime(entry.createdAt)}
+                  </time>
+                </div>
+                <p>{entry.message}</p>
+                {entry.performedByUserName ? (
+                  <p className="task-activity__actor">By {entry.performedByUserName}</p>
+                ) : null}
+              </li>
+            ))}
+          </ol>
+        ) : null}
+      </section>
     </section>
   )
 }

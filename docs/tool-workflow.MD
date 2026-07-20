@@ -535,9 +535,8 @@
 - **How to run full stack locally:**
   1. `cd backend && dotnet run --project LearningDashboard.Api --launch-profile http`
   2. `cd frontend && npm run dev`
-  3. Open `http://localhost:5173` (API proxied at `/api`)
-- **Next phase:** Phase 4 — frontend Vitest tests (`npm test`); backend tests already pass (`dotnet test` → 6/6)
-- Phase 3 AI workflow documented incrementally in Steps 1–15 (this file); no retroactive batch doc needed
+  3. Open `http://localhost:5173` and sign in at `/login` (demo: `alice@example.com` / `Password123!`)
+- Phases 1–6 complete; see `PROJECT-PLAN.md` §4 Phase 6 for stretch feature details
 
 #### Phase 5 — Polish and hardening (complete)
 
@@ -565,7 +564,7 @@
 
 ### Code Generation
 
-Phases 1–3, Phase 5 polish, and all mandatory tests (Phase 4) are complete.
+Phases 1–6, all mandatory tests (Phase 4), polish (Phase 5), and stretch features (Phase 6) are complete.
 
 #### Phase 4 — Frontend tests (complete)
 
@@ -583,7 +582,42 @@ Phases 1–3, Phase 5 polish, and all mandatory tests (Phase 4) are complete.
 - Confirmed seed data uses static timestamps (required for EF Core `HasData` in migrations)
 - Phase 3: reviewed UI state coverage on all data-fetching pages before marking phase complete
 
-**Acceptance criteria (PROJECT-PLAN §6):** All 12/12 verified 2026-07-20 — `dotnet test` 6/6, `npm test` 7/7, live API checks, UI state components on all pages, `.gitignore` for secrets/DB.
+**Acceptance criteria (PROJECT-PLAN §6):** All 12/12 verified 2026-07-20 — `dotnet test` 7/7, `npm test` 7/7, live API checks, UI state components on all pages, `.gitignore` for secrets/DB.
+
+#### Phase 6 — Stretch features (complete)
+
+Implemented after core Phases 1–5 and Part C submission. All six stretch items delivered.
+
+| # | Feature | Backend | Frontend |
+|---|---------|---------|----------|
+| 1 | Activity log | `ActivityLog` entity, `ActivityLogService`, `GET /api/tasks/{id}/activity` | Timeline on `TaskDetailPage` |
+| 2 | Pagination + filters | `TaskListQuery`, `PagedTasksResponse`, sort/filter query params | `TaskListPage` pagination, priority filter, sort |
+| 3 | JWT auth + RBAC | `AuthService`, `POST /api/auth/login`, Admin/Member rules in `TaskService` | `LoginPage`, `AuthContext`, `ProtectedRoute` |
+| 4 | a11y + UI polish | — | Skip link, landmarks, Plus Jakarta Sans, full-width layout, icon nav |
+| 5 | Docker + CI | `backend/Dockerfile`, `docker-compose.yml` | `frontend/Dockerfile`, `nginx.conf`, `.github/workflows/ci.yml` |
+| 6 | Prompt templates | — | `docs/prompts/01-backend-entities.md`, `02-api-endpoints.md`, `03-frontend-page-states.md` |
+
+**AI workflow for Phase 6**
+
+1. Confirmed all stretch options with user; implemented backend first (migration, services, endpoints)
+2. Updated integration tests for paged `GET /api/tasks` response shape
+3. Wired frontend auth (login → JWT storage → protected routes → API headers)
+4. Updated task list and detail pages for pagination and activity log
+5. Added Docker/CI configs; ran `dotnet test` (7/7) and `npm test` (7/7)
+6. Documented in `PROJECT-PLAN.md` §4 Phase 6 and this file
+
+| Feature | AI role | Human role |
+|---------|---------|------------|
+| ActivityLog | Generated entity, service, endpoint, detail UI section | Verified log messages on create/update/status change |
+| Pagination + filters | API query DTO + `TaskListPage` controls | Chose default page size (10) and sort options |
+| JWT auth + RBAC | `AuthService`, login endpoint, frontend `AuthContext` | Confirmed Admin vs Member rules; seeded demo passwords |
+| Docker + CI | Dockerfiles, `docker-compose.yml`, GitHub Actions workflow | Smoke-tested `dotnet test` / `npm test` locally |
+| a11y + UI | Skip link, landmarks, design refresh | Requested full-width layout; reviewed visual polish |
+| Prompt templates | `docs/prompts/*.md` for backend, API, frontend states | Reviewed for reuse in future projects |
+
+**Breaking change:** `GET /api/tasks` now returns `{ items, page, pageSize, totalCount, totalPages }` instead of a flat array. Auth required for all API routes except `/api/health` and `/api/auth/login` (disabled in `Testing` env for tests).
+
+**Result:** `dotnet test` → **7 passed**; `npm test` → **7 passed**; `npm run build` succeeds; login required at `/login` before dashboard access.
 
 ## 4. Information I Avoid Sharing with AI Tools
 

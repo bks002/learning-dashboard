@@ -1,6 +1,4 @@
-# Part C — Submission Draft
-
-> Draft answers for the participation form. Copy, edit in your own voice, then submit via the official form.
+# Submission Draft
 
 ---
 
@@ -30,9 +28,18 @@ I built a **full-stack Learning Dashboard** for the .NET AI Capability Exercise 
 - Swagger UI at `/swagger` (Development)
 - **6 integration tests** covering create → list, update → persist, filters, search, dashboard counts, and validation
 
+**Phase 6 stretch (post-submission)**
+
+- JWT authentication (`POST /api/auth/login`) with Admin/Member RBAC
+- Activity log per task (`GET /api/tasks/{id}/activity`)
+- Paginated, sortable, multi-filter task list (`GET /api/tasks?page=&pageSize=&sortBy=…`)
+- Docker Compose + GitHub Actions CI
+- Login page, protected routes, UI polish (full-width layout, icon nav, stat cards)
+- **7 integration tests** (added pagination test); auth bypassed in `Testing` environment
+
 **Frontend (React + TypeScript + Vite)**
 
-- Five routed pages: Dashboard, Task List, Create Task, Task Detail, Edit Task
+- Five routed pages plus login: Dashboard, Task List, Create Task, Task Detail, Edit Task, Login
 - API client with typed errors and Vite dev proxy (`/api` → backend)
 - Required UI states on all data-fetching views: **loading**, **empty**, **error**, **success**
 - Task form with client-side validation (blur + submit) merged with server validation errors
@@ -67,30 +74,34 @@ I built a **full-stack Learning Dashboard** for the .NET AI Capability Exercise 
 
 ## 3. What you'd improve with more time
 
-| Area | Improvement |
-|------|-------------|
-| Testing | More frontend tests (task list filters, edit flow, error boundaries) |
-| API | Pagination, sorting, multi-filter on task list |
-| Features | Activity log / audit trail for task changes |
-| Security | JWT auth and role-based access (Admin vs Member) |
-| DevOps | Docker Compose + GitHub Actions CI running `dotnet test` and `npm test` on every push |
-| UX | Toast notifications, optimistic updates, keyboard shortcuts |
-| Accessibility | Full WCAG audit, screen-reader testing |
+
+| Area          | Improvement                                                                           |
+| ------------- | ------------------------------------------------------------------------------------- |
+| Testing       | More frontend tests (task list filters, edit flow, error boundaries)                  |
+| API           | Pagination, sorting, multi-filter on task list                                        |
+| Features      | Activity log / audit trail for task changes                                           |
+| Security      | JWT auth and role-based access (Admin vs Member)                                      |
+| DevOps        | Docker Compose + GitHub Actions CI running `dotnet test` and `npm test` on every push |
+| UX            | Toast notifications, optimistic updates, keyboard shortcuts                           |
+| Accessibility | Full WCAG audit, screen-reader testing                                                |
+
 
 ---
 
 ## 4. Challenges and how you solved them
 
-| Challenge | Solution |
-|-----------|----------|
-| NuGet restore failed with 401 (corporate Azure feed) | Added project-level `NuGet.Config` scoped to nuget.org only |
-| EF Core 10 incompatible with .NET 9 | Pinned EF Core and tools to 9.0.15 |
-| `TaskStatus` naming conflict with `System.Threading.Tasks.TaskStatus` | Used fully qualified `Entities.TaskStatus` in C# |
-| Swagger v10 crashed on startup (`Microsoft.OpenApi` type load) | Downgraded to Swashbuckle 6.9.0 |
-| API rejected enum JSON until string converter added | Registered `JsonStringEnumConverter` in `Program.cs` |
-| CORS friction in local dev | Vite proxy `/api` → `http://localhost:5004`; relative API base URL |
-| Form validation UX (client + server errors) | Extracted `taskFormValidation.ts`; blur + submit validation; per-field server error clearing |
-| Clone-to-run for GitHub users | Comprehensive README, `.gitignore` for generated files, `package-lock.json` + migrations committed |
+
+| Challenge                                                             | Solution                                                                                           |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| NuGet restore failed with 401 (corporate Azure feed)                  | Added project-level `NuGet.Config` scoped to nuget.org only                                        |
+| EF Core 10 incompatible with .NET 9                                   | Pinned EF Core and tools to 9.0.15                                                                 |
+| `TaskStatus` naming conflict with `System.Threading.Tasks.TaskStatus` | Used fully qualified `Entities.TaskStatus` in C#                                                   |
+| Swagger v10 crashed on startup (`Microsoft.OpenApi` type load)        | Downgraded to Swashbuckle 6.9.0                                                                    |
+| API rejected enum JSON until string converter added                   | Registered `JsonStringEnumConverter` in `Program.cs`                                               |
+| CORS friction in local dev                                            | Vite proxy `/api` → `http://localhost:5004`; relative API base URL                                 |
+| Form validation UX (client + server errors)                           | Extracted `taskFormValidation.ts`; blur + submit validation; per-field server error clearing       |
+| Clone-to-run for GitHub users                                         | Comprehensive README, `.gitignore` for generated files, `package-lock.json` + migrations committed |
+
 
 ---
 
@@ -98,20 +109,22 @@ I built a **full-stack Learning Dashboard** for the .NET AI Capability Exercise 
 
 All **12/12** criteria passed on 2026-07-20.
 
-| # | Criterion | Result |
-|---|-----------|--------|
-| 1 | Create via UI | Pass — integration test + `TaskForm` submit test + `CreateTaskPage` |
-| 2 | Dashboard from backend | Pass — API + `DashboardPage.test.tsx` |
-| 3 | List from DB | Pass — integration test + `TaskListPage` |
-| 4 | Task detail view | Pass — `TaskDetailPage` + API detail |
-| 5 | Update details/status | Pass — integration test + `EditTaskPage` + PATCH actions |
-| 6 | Search or status filter | Pass — 2 integration tests + `TaskListPage` UI |
-| 7 | Dashboard counts correct | Pass — `DashboardTests` + live API |
-| 8 | Data survives restart | Pass — SQLite file + migrations on startup |
-| 9 | Backend validation | Pass — 400 on invalid create (API + client tests) |
-| 10 | Loading/empty/success/error | Pass — all 5 pages use state components |
-| 11 | No secrets | Pass — scan + `.gitignore` |
-| 12 | Core tests pass | Pass — `dotnet test` 6/6, `npm test` 7/7 |
+
+| #   | Criterion                   | Result                                                              |
+| --- | --------------------------- | ------------------------------------------------------------------- |
+| 1   | Create via UI               | Pass — integration test + `TaskForm` submit test + `CreateTaskPage` |
+| 2   | Dashboard from backend      | Pass — API + `DashboardPage.test.tsx`                               |
+| 3   | List from DB                | Pass — integration test + `TaskListPage`                            |
+| 4   | Task detail view            | Pass — `TaskDetailPage` + API detail                                |
+| 5   | Update details/status       | Pass — integration test + `EditTaskPage` + PATCH actions            |
+| 6   | Search or status filter     | Pass — 2 integration tests + `TaskListPage` UI                      |
+| 7   | Dashboard counts correct    | Pass — `DashboardTests` + live API                                  |
+| 8   | Data survives restart       | Pass — SQLite file + migrations on startup                          |
+| 9   | Backend validation          | Pass — 400 on invalid create (API + client tests)                   |
+| 10  | Loading/empty/success/error | Pass — all 5 pages use state components                             |
+| 11  | No secrets                  | Pass — scan + `.gitignore`                                          |
+| 12  | Core tests pass             | Pass — `dotnet test` 6/6, `npm test` 7/7                            |
+
 
 See `docs/PROJECT-PLAN.md` §6 for full evidence column.
 
@@ -119,15 +132,17 @@ See `docs/PROJECT-PLAN.md` §6 for full evidence column.
 
 ## Pre-submission checklist
 
-| Item | Status |
-|------|--------|
-| Public/shareable repo URL | ☑ https://github.com/bks002/learning-dashboard |
-| `docs/tool-workflow.MD` complete | ☑ |
-| `README.md` with run instructions | ☑ |
-| `dotnet test` passes (6 tests) | ☑ |
-| `npm test` passes | ☑ |
-| No secrets in repository | ☑ |
-| Participation form answers drafted | ☑ (this document) |
+
+| Item                               | Status                                                                                         |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Public/shareable repo URL          | ☑ [https://github.com/bks002/learning-dashboard](https://github.com/bks002/learning-dashboard) |
+| `docs/tool-workflow.MD` complete   | ☑                                                                                              |
+| `README.md` with run instructions  | ☑                                                                                              |
+| `dotnet test` passes (6 tests)     | ☑                                                                                              |
+| `npm test` passes                  | ☑                                                                                              |
+| No secrets in repository           | ☑                                                                                              |
+| Participation form answers drafted | ☑ (this document)                                                                              |
+
 
 ---
 
@@ -145,10 +160,11 @@ npm ci
 npm run dev
 ```
 
-Open http://localhost:5173
+Open [http://localhost:5173](http://localhost:5173)
 
 ```bash
 # Tests
 cd backend && dotnet test
 cd frontend && npm test
 ```
+

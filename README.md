@@ -63,6 +63,16 @@ npm run dev
 
 The Vite dev server proxies `/api` to `http://localhost:5004`, so the UI talks to the backend without CORS setup.
 
+### Sign in (Phase 6)
+
+The API requires JWT authentication in Development and Production. Sign in at http://localhost:5173/login with a seeded account:
+
+| Email | Password | Role |
+|-------|----------|------|
+| `alice@example.com` | `Password123!` | Admin |
+| `bob@example.com` | `Password123!` | Member |
+| `carol@example.com` | `Password123!` | Member |
+
 > Use `npm ci` (not `npm install`) after clone to install exact versions from `package-lock.json`.
 
 ### 4. Optional environment file
@@ -88,7 +98,7 @@ Default `VITE_API_BASE_URL=/api` works with the Vite proxy. Only change this if 
 ## Tests
 
 ```bash
-# Backend — 6 integration tests (create, update, filter, search, dashboard counts, validation)
+# Backend — 7 integration tests (create, update, filter, search, pagination, dashboard counts, validation)
 cd backend
 dotnet test
 
@@ -97,7 +107,22 @@ cd frontend
 npm test
 ```
 
-Backend tests use in-memory SQLite via `WebApplicationFactory`. Frontend tests use Vitest + React Testing Library with mocked API calls.
+Backend tests use in-memory SQLite via `WebApplicationFactory` (auth disabled in `Testing` environment). Frontend tests use Vitest + React Testing Library with mocked API calls.
+
+## Docker (optional)
+
+Run the full stack with Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+| Service | URL |
+|---------|-----|
+| Web UI | http://localhost:8080 |
+| API (direct) | http://localhost:5004 |
+
+The web container proxies `/api` to the API container. SQLite data persists in the `api-data` Docker volume.
 
 ## Project structure
 
@@ -110,7 +135,10 @@ learning-dashboard/
 ├── frontend/                         # React SPA (Vite)
 ├── docs/
 │   ├── PROJECT-PLAN.md               # Phased implementation plan
+│   ├── prompts/                      # Reusable AI prompt templates (Phase 6)
 │   └── tool-workflow.MD              # Part A: AI workflow document
+├── .github/workflows/ci.yml          # GitHub Actions (dotnet test + npm test)
+├── docker-compose.yml
 ├── NuGet.Config                      # nuget.org only (avoids corporate feed 401s)
 ├── .gitignore
 └── README.md
@@ -129,8 +157,8 @@ learning-dashboard/
 
 ## Assessment parts
 
-- **Part A:** `docs/tool-workflow.MD` — AI workflow documentation
-- **Part B:** Core dashboard app (this repo)
+- **Part A:** `docs/tool-workflow.MD` — AI workflow documentation (includes Phase 6)
+- **Part B:** Core dashboard app + Phase 6 stretch features (this repo)
 - **Part C:** Submission via participation form — draft answers in `docs/SUBMISSION-DRAFT.md`
 
-See `docs/PROJECT-PLAN.md` for the full plan and acceptance criteria checklist.
+See `docs/PROJECT-PLAN.md` for the full phased plan (Phases 1–6) and acceptance criteria checklist.

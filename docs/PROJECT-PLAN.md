@@ -19,7 +19,7 @@ A phased plan aligned with the participant guide effort split: **Part A (20%)**,
 | Docs           | `tool-workflow.MD`, `README.md` | Part A + repo setup                          |
 
 
-**Optional (stretch):** Docker, GitHub Actions CI.
+**Optional (stretch):** Docker, GitHub Actions CI — **implemented in Phase 6**.
 
 ---
 
@@ -41,7 +41,12 @@ learning-dashboard/
 │   │   └── types/
 │   └── package.json
 ├── docs/
+│   ├── PROJECT-PLAN.md           # Phased implementation plan (Phases 1–6)
+│   ├── prompts/                  # Phase 6: reusable AI prompt templates
+│   ├── SUBMISSION-DRAFT.md       # Part C form answers
 │   └── tool-workflow.MD          # Part A
+├── .github/workflows/ci.yml      # Phase 6: GitHub Actions
+├── docker-compose.yml            # Phase 6: full-stack Docker
 ├── .gitignore                    # exclude *.db, .env, secrets
 └── README.md
 ```
@@ -274,18 +279,156 @@ Counts must update correctly from real data.
 
 
 
-### Phase 6 — Stretch (only if core is solid)
+### Phase 6 — Stretch features — complete
 
+Phase 6 adds optional stretch goals **after** core Phases 1–5 passed all acceptance criteria and tests. All six stretch items were implemented.
 
-| Stretch                          | Effort     | Notes                              |
-| -------------------------------- | ---------- | ---------------------------------- |
-| ActivityLog / audit              | Medium     | Log create/update on `ProjectTask` |
-| Multi-filter + sort + pagination | Medium     | Query params on `GET /api/tasks`   |
-| Responsive + a11y                | Low–medium | Focus, labels, keyboard nav        |
-| Auth + RBAC                      | High       | JWT + role checks — only if time   |
-| Docker + CI                      | Medium     | `docker-compose`, GitHub Actions   |
-| AI prompt templates              | Low        | `docs/prompts/` for reuse evidence |
+#### 6.1 Activity log / audit trail
 
+**Backend**
+
+- [x] `ActivityLog` entity + `ActivityAction` enum (`Created`, `Updated`, `StatusChanged`)
+- [x] `ActivityLogService` — writes log entries on task create, update, and status change
+- [x] `GET /api/tasks/{id}/activity` — returns chronological activity for a task
+- [x] EF migration `Phase6_StretchFeatures`
+
+**Frontend**
+
+- [x] Activity section on `TaskDetailPage` with loading, empty, and error states
+- [x] Types in `frontend/src/types/activityLog.ts`
+
+**Key files:** `Entities/ActivityLog.cs`, `Services/ActivityLogService.cs`, `Endpoints/ActivityLogEndpoints.cs`
+
+---
+
+#### 6.2 Multi-filter, sort, and pagination
+
+**Backend**
+
+- [x] `TaskListQuery` DTO — `page`, `pageSize`, `status`, `search`, `priority`, `sortBy`, `sortDir`
+- [x] `PagedTasksResponse` — `items`, `page`, `pageSize`, `totalCount`, `totalPages`
+- [x] `GET /api/tasks` returns a **paged object** (breaking change from flat array)
+- [x] Sort fields: `updatedAt` (default), `title`, `dueDate`, `priority`, `status`
+- [x] Integration test `GetTasks_WithPagination_ReturnsPagedResult`
+
+**Frontend**
+
+- [x] `TaskListPage` — status + priority filters, sort dropdown, debounced search, prev/next pagination
+- [x] `PagedTasks` type + updated `getTasks()` in `api.ts`
+
+**Default query:** `page=1`, `pageSize=10`, `sortBy=updatedAt`, `sortDir=desc`
+
+---
+
+#### 6.3 JWT authentication and RBAC
+
+**Backend**
+
+- [x] `User.PasswordHash` (nullable) + `PasswordSeeder` on startup (`Password123!` for seeded users)
+- [x] `POST /api/auth/login` → JWT (`LoginRequest` / `LoginResponse`)
+- [x] JWT config in `appsettings.json` (`Jwt:Key`, `Issuer`, `Audience`, `ExpiryMinutes`)
+- [x] `Microsoft.AspNetCore.Authentication.JwtBearer` package
+- [x] All `/api/*` routes require auth except `/api/health` and `/api/auth/login`
+- [x] **RBAC in `TaskService`:** Admin can modify any task; Member can modify only own tasks
+- [x] Auth disabled in `Testing` environment (integration tests unchanged)
+
+**Frontend**
+
+- [x] `LoginPage` at `/login`
+- [x] `AuthContext` + `authStorage` (JWT in `localStorage`)
+- [x] `ProtectedRoute` — redirects unauthenticated users to login
+- [x] API client sends `Authorization: Bearer <token>` header
+
+**Demo accounts**
+
+| Email | Password | Role |
+|-------|----------|------|
+| `alice@example.com` | `Password123!` | Admin |
+| `bob@example.com` | `Password123!` | Member |
+| `carol@example.com` | `Password123!` | Member |
+
+**Key files:** `Services/AuthService.cs`, `Endpoints/AuthEndpoints.cs`, `Data/PasswordSeeder.cs`, `context/AuthContext.tsx`
+
+---
+
+#### 6.4 Responsive layout and accessibility
+
+- [x] Skip-to-main-content link
+- [x] `main` landmark with `id="main-content"`
+- [x] `aria-label` / `aria-labelledby` on filters, pagination, and page sections
+- [x] Focus-visible styles on interactive elements
+- [x] Full-width responsive layout; dashboard stat cards in 5-column grid on wide screens
+- [x] UI refresh: Plus Jakarta Sans, gradient accents, icon nav, stat cards, split login screen
+
+**Key files:** `styles/shared.css`, `components/AppLayout.tsx`, `components/Icon.tsx`, page CSS modules
+
+---
+
+#### 6.5 Docker and CI
+
+**Docker**
+
+- [x] `backend/Dockerfile` — multi-stage .NET 9 publish
+- [x] `frontend/Dockerfile` — Vite build + nginx
+- [x] `frontend/nginx.conf` — proxies `/api` to API container
+- [x] `docker-compose.yml` — `api` on `:5004`, `web` on `:8080`, SQLite volume `api-data`
+
+```bash
+docker compose up --build
+```
+
+**CI**
+
+- [x] `.github/workflows/ci.yml` — runs `dotnet test` and `npm test` on push/PR to `main`
+
+---
+
+#### 6.6 AI prompt templates
+
+Reusable prompt files for future projects:
+
+| File | Purpose |
+|------|---------|
+| `docs/prompts/01-backend-entities.md` | Entity + DbContext + migration scaffold |
+| `docs/prompts/02-api-endpoints.md` | Minimal API endpoints + DTOs |
+| `docs/prompts/03-frontend-page-states.md` | React pages with loading/empty/error/success |
+
+---
+
+#### Phase 6 — API summary (new/changed)
+
+| Endpoint | Method | Auth | Notes |
+|----------|--------|------|-------|
+| `/api/auth/login` | POST | Anonymous | Returns JWT |
+| `/api/tasks` | GET | Required | Paged; query: `page`, `pageSize`, `status`, `search`, `priority`, `sortBy`, `sortDir` |
+| `/api/tasks/{id}/activity` | GET | Required | Activity log entries |
+| `/api/health` | GET | Anonymous | Health check |
+
+All other Phase 2 endpoints unchanged but now require JWT in Development/Production.
+
+#### Phase 6 — Routes (frontend)
+
+| Route | Page | Auth |
+|-------|------|------|
+| `/login` | Sign in | Public |
+| `/` | Dashboard | Protected |
+| `/tasks` | Task list (paged) | Protected |
+| `/tasks/new` | Create task | Protected |
+| `/tasks/:id` | Task detail + activity | Protected |
+| `/tasks/:id/edit` | Edit task | Protected |
+
+#### Phase 6 — Stretch checklist
+
+| Stretch | Status | Evidence |
+| ------- | ------ | -------- |
+| ActivityLog / audit | **Done** | `ActivityLog` entity, `GET /api/tasks/{id}/activity`, UI on `TaskDetailPage` |
+| Multi-filter + sort + pagination | **Done** | `TaskListQuery`, paged `GET /api/tasks`, filters/sort/pagination on `TaskListPage` |
+| Responsive + a11y | **Done** | Skip link, landmarks, `aria-*`, full-width layout, UI polish |
+| Auth + RBAC | **Done** | JWT login, `LoginPage`, protected routes, Admin/Member rules in `TaskService` |
+| Docker + CI | **Done** | `docker-compose.yml`, Dockerfiles, `.github/workflows/ci.yml` |
+| AI prompt templates | **Done** | `docs/prompts/01-backend-entities.md`, `02-api-endpoints.md`, `03-frontend-page-states.md` |
+
+**Exit criteria:** `dotnet test` (7/7) and `npm test` (7/7) pass; login + paginated list + activity log work in UI.
 
 **Rule:** Do not add stretch at the cost of core functionality, testing, or `tool-workflow.MD`.
 
@@ -302,7 +445,8 @@ Completed through the participation form.
 - [x] Public or shareable repo URL — https://github.com/bks002/learning-dashboard
 - [x] `tool-workflow.MD` complete
 - [x] README with run instructions
-- [x] Core tests passing (`dotnet test` 6/6, `npm test` 7/7)
+- [x] Core tests passing (`dotnet test` 7/7, `npm test` 7/7)
+- [x] Phase 6 stretch features documented (see §4 Phase 6)
 - [x] No secrets in git history (nothing committed yet; `.gitignore` in place)
 - [x] Participation form answers drafted (`docs/SUBMISSION-DRAFT.md`)
 
@@ -327,7 +471,7 @@ Completed through the participation form.
 | 9 | Backend validation | POST invalid payload → 400 | **Pass** | `CreateTask_WithEmptyTitle_ReturnsBadRequest`; live empty-title POST → 400; `taskFormValidation.test.ts` client-side |
 | 10 | Loading/empty/success/error | Manual UI review | **Pass** | `LoadingSpinner`/`EmptyState`/`ErrorMessage`/`SuccessMessage` on Dashboard, List, Detail, Create, Edit pages |
 | 11 | No secrets | Scan repo, check `.gitignore` | **Pass** | No passwords/API keys in source; `.env` + `*.db` gitignored; seed uses `@example.com` |
-| 12 | Core tests pass | `dotnet test` / `npm test` | **Pass** | `dotnet test` → 6/6; `npm test` → 7/7 |
+| 12 | Core tests pass | `dotnet test` / `npm test` | **Pass** | `dotnet test` → 7/7; `npm test` → 7/7 |
 
 ---
 
@@ -341,8 +485,9 @@ Completed through the participation form.
 | 1   | Scaffold, entities, DB, seed, basic API                       |
 | 2   | All endpoints + dashboard logic                               |
 | 3   | Frontend core pages + states                                  |
-| 4   | Tests + bug fixes                                             |
-| 5   | `tool-workflow.MD`, README, submission form, optional stretch |
+| 4   | Tests + bug fixes + polish                                    |
+| 5   | `tool-workflow.MD`, README, submission form                   |
+| 6+  | Phase 6 stretch (auth, pagination, activity log, Docker, CI) |
 
 
 ---
@@ -384,13 +529,11 @@ Completed through the participation form.
 
 
 
-## 10. Immediate Next Steps
+## 10. Project status
 
-1. Create repo `learning-dashboard` with backend + frontend folders
-2. Implement entities + migrations + user seed
-3. Build dashboard summary endpoint first (drives tests)
-4. Build frontend dashboard + task list
-5. Add integration tests for create → list → update → counts
-6. Write `tool-workflow.MD` from your actual build session
-7. Submit via participation form
+All phases complete (1–6). Core acceptance criteria: **12/12**. Tests: `dotnet test` **7/7**, `npm test` **7/7**.
+
+**Run locally:** see `README.md` — backend on `:5004`, frontend on `:5173`, sign in at `/login`.
+
+**Optional Docker:** `docker compose up --build` → UI at http://localhost:8080
 

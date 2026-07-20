@@ -7,6 +7,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<User> Users => Set<User>();
     public DbSet<ProjectTask> ProjectTasks => Set<ProjectTask>();
+    public DbSet<ActivityLog> ActivityLogs => Set<ActivityLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -25,6 +26,32 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(user => user.Role)
                 .HasConversion<string>()
                 .HasMaxLength(50);
+
+            entity.Property(user => user.PasswordHash)
+                .HasMaxLength(500);
+        });
+
+        modelBuilder.Entity<ActivityLog>(entity =>
+        {
+            entity.HasKey(log => log.Id);
+
+            entity.Property(log => log.Action)
+                .HasConversion<string>()
+                .HasMaxLength(50);
+
+            entity.Property(log => log.Message)
+                .IsRequired()
+                .HasMaxLength(500);
+
+            entity.HasOne(log => log.Task)
+                .WithMany()
+                .HasForeignKey(log => log.TaskId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(log => log.PerformedByUser)
+                .WithMany()
+                .HasForeignKey(log => log.PerformedByUserId)
+                .OnDelete(DeleteBehavior.SetNull);
         });
 
         modelBuilder.Entity<ProjectTask>(entity =>

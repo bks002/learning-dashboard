@@ -17,6 +17,40 @@ namespace LearningDashboard.Api.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.15");
 
+            modelBuilder.Entity("LearningDashboard.Api.Entities.ActivityLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("PerformedByUserId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TaskId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PerformedByUserId");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("ActivityLogs");
+                });
+
             modelBuilder.Entity("LearningDashboard.Api.Entities.ProjectTask", b =>
                 {
                     b.Property<int>("Id")
@@ -109,6 +143,10 @@ namespace LearningDashboard.Api.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("PasswordHash")
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -140,6 +178,24 @@ namespace LearningDashboard.Api.Migrations
                             Name = "Carol Member",
                             Role = "Member"
                         });
+                });
+
+            modelBuilder.Entity("LearningDashboard.Api.Entities.ActivityLog", b =>
+                {
+                    b.HasOne("LearningDashboard.Api.Entities.User", "PerformedByUser")
+                        .WithMany()
+                        .HasForeignKey("PerformedByUserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("LearningDashboard.Api.Entities.ProjectTask", "Task")
+                        .WithMany()
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PerformedByUser");
+
+                    b.Navigation("Task");
                 });
 
             modelBuilder.Entity("LearningDashboard.Api.Entities.ProjectTask", b =>

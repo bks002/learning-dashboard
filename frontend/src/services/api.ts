@@ -1,12 +1,19 @@
 import type {
+  ActivityLogEntry,
+  AuthSession,
   CreateProjectTaskRequest,
   DashboardSummary,
+  LoginRequest,
+  LoginResponse,
+  PagedTasks,
   ProjectTask,
+  TaskPriority,
   TaskStatus,
   UpdateProjectTaskRequest,
   User,
 } from '../types'
 import { ApiError, parseApiError } from './apiError'
+import { getAuthToken } from './authStorage'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api'
 
@@ -15,6 +22,11 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
   if (options.body && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
+  }
+
+  const token = getAuthToken()
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`)
   }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -38,17 +50,24 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return JSON.parse(text) as T
 }
 
-function buildQueryString(params: Record<string, string | undefined>): string {
+function buildQueryString(params: Record<string, string | number | undefined>): string {
   const searchParams = new URLSearchParams()
 
   for (const [key, value] of Object.entries(params)) {
-    if (value) {
-      searchParams.set(key, value)
+    if (value !== undefined && value !== '') {
+      searchParams.set(key, String(value))
     }
   }
 
   const query = searchParams.toString()
   return query ? `?${query}` : ''
+}
+
+export async function login(data: LoginRequest): Promise<LoginResponse> {
+  return request<LoginResponse>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
 }
 
 export async function getDashboardSummary(): Promise<DashboardSummary> {
@@ -60,19 +79,33 @@ export async function getUsers(): Promise<User[]> {
 }
 
 export async function getTasks(options?: {
+  page?: number
+  pageSize?: number
   status?: TaskStatus
   search?: string
-}): Promise<ProjectTask[]> {
+  priority?: TaskPriority
+  sortBy?: string
+  sortDir?: 'asc' | 'desc'
+}): Promise<PagedTasks> {
   const query = buildQueryString({
+    page: options?.page,
+    pageSize: options?.pageSize,
     status: options?.status,
     search: options?.search,
+    priority: options?.priority,
+    sortBy: options?.sortBy,
+    sortDir: options?.sortDir,
   })
 
-  return request<ProjectTask[]>(`/tasks${query}`)
+  return request<PagedTasks>(`/tasks${query}`)
 }
 
 export async function getTask(id: number): Promise<ProjectTask> {
   return request<ProjectTask>(`/tasks/${id}`)
+}
+
+export async function getTaskActivity(id: number): Promise<ActivityLogEntry[]> {
+  return request<ActivityLogEntry[]>(`/tasks/${id}/activity`)
 }
 
 export async function createTask(
@@ -104,4 +137,5 @@ export async function updateTaskStatus(
   })
 }
 
+export type { AuthSession }
 export { ApiError }

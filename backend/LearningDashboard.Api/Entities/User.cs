@@ -17,5 +17,7 @@ public class User
 
     public UserRole Role { get; set; }
 
+    public string? PasswordHash { get; set; }
+
     public ICollection<ProjectTask> Tasks { get; set; } = new List<ProjectTask>();
 }

@@ -1,0 +1,121 @@
+.dashboard-card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition:
+    transform 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.dashboard-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--border-strong);
+}
+
+.dashboard-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-border);
+  box-shadow: var(--shadow);
+}
+
+.dashboard-card__icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--code-bg);
+  color: var(--text-h);
+  flex-shrink: 0;
+}
+
+.dashboard-card__icon {
+  width: 20px;
+  height: 20px;
+}
+
+.dashboard-card__content {
+  min-width: 0;
+}
+
+.dashboard-card__label {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.dashboard-card__value {
+  margin: 0;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  line-height: 1;
+  color: var(--text-h);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.dashboard-card--accent::before {
+  background: var(--accent);
+}
+
+.dashboard-card--accent .dashboard-card__icon-wrap {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.dashboard-card--accent .dashboard-card__value {
+  color: var(--accent);
+}
+
+.dashboard-card--success::before {
+  background: var(--success);
+}
+
+.dashboard-card--success .dashboard-card__icon-wrap {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.dashboard-card--success .dashboard-card__value {
+  color: var(--success);
+}
+
+.dashboard-card--warning::before {
+  background: var(--warning);
+}
+
+.dashboard-card--warning .dashboard-card__icon-wrap {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.dashboard-card--warning .dashboard-card__value {
+  color: var(--warning);
+}
+
+.dashboard-card--info::before {
+  background: var(--info);
+}
+
+.dashboard-card--info .dashboard-card__icon-wrap {
+  background: var(--info-soft);
+  color: var(--info);
+}
+
+.dashboard-card--info .dashboard-card__value {
+  color: var(--info);
+}

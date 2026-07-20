@@ -1,5 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { AuthProvider } from '../context/AuthContext'
 import { DashboardPage } from './DashboardPage'
 import * as api from '../services/api'
 
@@ -11,6 +13,19 @@ vi.mock('../services/api', async (importOriginal) => {
   }
 })
 
+vi.mock('../services/authStorage', () => ({
+  getAuthSession: () => ({
+    token: 'test-token',
+    userId: 1,
+    name: 'Alice Admin',
+    email: 'alice@example.com',
+    role: 'Admin',
+  }),
+  setAuthSession: vi.fn(),
+  clearAuthSession: vi.fn(),
+  getAuthToken: () => 'test-token',
+}))
+
 const mockSummary = {
   totalItems: 5,
   completedItems: 2,
@@ -19,13 +34,23 @@ const mockSummary = {
   highPriorityItems: 3,
 }
 
+function renderDashboard() {
+  return render(
+    <MemoryRouter>
+      <AuthProvider>
+        <DashboardPage />
+      </AuthProvider>
+    </MemoryRouter>,
+  )
+}
+
 describe('DashboardPage', () => {
   beforeEach(() => {
     vi.mocked(api.getDashboardSummary).mockResolvedValue(mockSummary)
   })
 
   it('renders dashboard counts from mocked API', async () => {
-    render(<DashboardPage />)
+    renderDashboard()
 
     expect(screen.getByText('Loading dashboard...')).toBeInTheDocument()
 
@@ -45,7 +70,7 @@ describe('DashboardPage', () => {
       new api.ApiError('Network error', 500),
     )
 
-    render(<DashboardPage />)
+    renderDashboard()
 
     expect(
       await screen.findByText('Unable to load dashboard'),

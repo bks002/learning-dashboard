@@ -12,10 +12,10 @@ public class TaskFlowTests(LearningDashboardApiFactory factory) : IntegrationTes
     {
         var created = await CreateTaskAsync("Integration create test");
 
-        var tasks = await Client.GetFromJsonAsync<List<ProjectTaskResponse>>("/api/tasks", JsonOptions);
+        var paged = await Client.GetFromJsonAsync<PagedTasksResponse>("/api/tasks", JsonOptions);
 
-        Assert.NotNull(tasks);
-        Assert.Contains(tasks, task => task.Id == created.Id && task.Title == "Integration create test");
+        Assert.NotNull(paged);
+        Assert.Contains(paged.Items, task => task.Id == created.Id && task.Title == "Integration create test");
     }
 
     [Fact]
@@ -71,14 +71,14 @@ public class TaskFlowTests(LearningDashboardApiFactory factory) : IntegrationTes
         await CreateTaskAsync("Filtered in progress", status: Entities.TaskStatus.InProgress);
         await CreateTaskAsync("Filtered planned", status: Entities.TaskStatus.Planned);
 
-        var tasks = await Client.GetFromJsonAsync<List<ProjectTaskResponse>>(
+        var paged = await Client.GetFromJsonAsync<PagedTasksResponse>(
             "/api/tasks?status=InProgress",
             JsonOptions);
 
-        Assert.NotNull(tasks);
-        Assert.NotEmpty(tasks);
-        Assert.All(tasks, task => Assert.Equal(Entities.TaskStatus.InProgress, task.Status));
-        Assert.Contains(tasks, task => task.Title == "Filtered in progress");
+        Assert.NotNull(paged);
+        Assert.NotEmpty(paged.Items);
+        Assert.All(paged.Items, task => Assert.Equal(Entities.TaskStatus.InProgress, task.Status));
+        Assert.Contains(paged.Items, task => task.Title == "Filtered in progress");
     }
 
     [Fact]
@@ -87,12 +87,26 @@ public class TaskFlowTests(LearningDashboardApiFactory factory) : IntegrationTes
         const string uniqueKeyword = "XyZSearchTerm987";
         await CreateTaskAsync($"{uniqueKeyword} task title");
 
-        var tasks = await Client.GetFromJsonAsync<List<ProjectTaskResponse>>(
+        var paged = await Client.GetFromJsonAsync<PagedTasksResponse>(
             $"/api/tasks?search={uniqueKeyword}",
             JsonOptions);
 
-        Assert.NotNull(tasks);
-        Assert.Single(tasks);
-        Assert.Contains(uniqueKeyword, tasks[0].Title);
+        Assert.NotNull(paged);
+        Assert.Single(paged.Items);
+        Assert.Contains(uniqueKeyword, paged.Items[0].Title);
+    }
+
+    [Fact]
+    public async Task GetTasks_WithPagination_ReturnsPagedResult()
+    {
+        var paged = await Client.GetFromJsonAsync<PagedTasksResponse>(
+            "/api/tasks?page=1&pageSize=1",
+            JsonOptions);
+
+        Assert.NotNull(paged);
+        Assert.Equal(1, paged.Page);
+        Assert.Equal(1, paged.PageSize);
+        Assert.Single(paged.Items);
+        Assert.True(paged.TotalCount >= 1);
     }
 }
